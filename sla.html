@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            outline: 0;
+        }
+        div{
+            display:flex;
+            flex-direction: column;
+            border: solid 1px black;
+            width: 300px;
+            margin-left: 300px;
+            margin-top: 20px;
+        }
+        input{
+            border: none;
+            padding: 5px;
+        }
+        ul{
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: flex-start;
+        }
+        li{
+            background-color: lightgray;
+            border-radius: 2px;
+            margin: 2px;
+            height: 30px;
+            padding-right: 5px;
+        }
+        li button{
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 17px;
+            width: 25px;
+            height: 100%;
+            padding-left: 5px;
+            padding-right: 5px;
+            margin-right: 5px;
+        }
+        li button:hover{
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        select{
+            display: none;
+        }
+        .sugestions{
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border-top: solid 2px black;
+        }
+        .sugestion{
+            display: block;
+            width: 100%;
+            cursor: pointer;
+        }
+        .sugestion:hover{
+            background-color: lightgray;
+        }
+
+    </style>
+</head>
+<body>
+    <div>
+        <ul>
+
+        </ul>
+        <input type="text">
+        <select name="" id="">
+            <option value="teste1">teste1</option>
+            <option value="teste2">teste2</option>
+            <option value="teste3">teste3</option>
+        </select>
+        <span class="sugestions">
+        </span>
+    </div>
+
+    <script>
+        let input = document.querySelector("input")
+        let select = document.querySelector("select")
+        let sugestions = document.querySelector(".sugestions")
+        let ul = document.querySelector("ul")
+
+        let filtredOptions = []
+
+        const filtra = () => {
+            sugestions.innerHTML = ''
+
+            filtredOptions = [...select.children].filter(option => {
+                if(option.value.indexOf(input.value) > -1){
+                    return option
+                }
+            })
+
+            lista()
+        }
+
+        const lista = () => {
+            filtredOptions.forEach(option => {
+                let span = document.createElement("span")
+                span.innerHTML = option.value
+                span.classList.add("sugestion")
+
+                span.addEventListener("click", () => {
+                    insere(option)
+                })
+
+                sugestions.appendChild(span)
+            })
+        }
+
+        const removelista = () => {
+            setTimeout(()=>{
+                [...sugestions.children].forEach(children => {
+                    sugestions.removeChild(children)
+                })
+            }, 100)
+        }
+
+        const removeOption = (quem) => {
+            let item = [...ul.children].filter(children => {
+                if(children.childNodes[1].textContent === quem){
+                    return children
+                }
+            })
+
+            ul.removeChild(item[0])
+        }
+
+        const insere = (option) => {
+            ul.innerHTML += `<li><button onclick="removeOption('${option.value}')">X</button>${option.value}</li>`
+            input.value = ''
+            input.select()
+        }
+
+        input.addEventListener("keyup", ()=>{
+            filtra()
+        })
+
+        input.addEventListener("click", ()=>{
+            filtra()
+        })
+
+        input.addEventListener("focusout", ()=>{
+            removelista()
+        })
+
+    </script>
+</body>
+</html>

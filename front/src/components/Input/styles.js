@@ -48,15 +48,5 @@ const MyTextarea = styled.textarea`
     }
 `
 
-const MyLabel = styled.label`
-    color: #b5b5b5;
-    font-weight: 600;
-    font-size: 16px;
-    height: 20px;
-`
 
-const Span = styled.span`
-    font-size: 18px;
-`
-
-export {MyDivInput, MyInput, MyTextarea, MyLabel, Span}
+export {MyDivInput, MyInput, MyTextarea}

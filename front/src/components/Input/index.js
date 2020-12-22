@@ -1,9 +1,11 @@
-import { MyDivInput, MyInput, MyTextarea, MyLabel, Span } from './styles'
+import { MyDivInput, MyInput, MyTextarea } from './styles'
+
+import MyLabel from '../Label/index'
 
 const Input = (props) => {
     return (
         <MyDivInput>
-            <MyLabel>{props.label}{props.required ? <Span className="text-danger ml-1 ">*</Span> : ""}</MyLabel>
+            <MyLabel label={props.label} required={props.required} />
             { 
                 props.textarea ? 
                 <MyTextarea 
