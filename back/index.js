@@ -1,7 +1,8 @@
 const venom = require('venom-bot')
 const express = require('express')
 const bodyParser = require('body-parser')
-var cors = require('cors')
+const cors = require('cors')
+const routes = require('./routes/app')
 
 const app = express()
 
@@ -20,24 +21,7 @@ venom
         console.log(erro);
     });
 
-app.post('/sendMessage', (req, res)=> {
-    let {initialMessage, history} = req.body
-
-    start()
-
-    function start() {
-        let formatedOptions = ''
-
-        req.body.options.forEach((option, index) => {
-            formatedOptions+=`\n*${index+1}* - ${option}`
-        })
-
-        cliente.sendText(
-        '5514999040647@c.us', `${initialMessage}\n${formatedOptions}`
-        )
-    }
-
-})
+app.use('/', routes)
 
 app.listen('3030', ()=>{
     console.log('rodando em 3030')
