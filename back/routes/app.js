@@ -11,6 +11,32 @@ routes.post('/saveNewRule', (req, res)=>{
     })
 })
 
+routes.get('/settings', (req, res)=>{
+    let {name, email, number} = req.body
+
+    connection.query(`SELECT * FROM settings `, (error, results, fields)=>{
+        if(error) console.log(error)
+
+        res.send(results[0])
+    })
+})
+
+routes.post('/settings', (req, res)=>{
+    let {name, email, number} = req.body
+
+    connection.query(`SELECT * FROM settings `, (error, results, fields)=>{
+        if(error) console.log(error)
+
+        if(results.length === 0){
+            console.log('oi')
+            connection.query(`INSERT INTO settings (name, email, number) VALUES('${name}', '${email}', '${number}')`)
+        }else{
+            connection.query(`UPDATE settings SET name='${name}', email='${email}', number='${number}'`)
+        }
+    })
+})
+
+
 routes.get('/list', (req, res)=>{
 
     connection.query(`SELECT * FROM rules`, (error, results, fields)=>{

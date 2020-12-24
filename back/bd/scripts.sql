@@ -6,3 +6,9 @@ CREATE TABLE rules(
     rule_case_yes VARCHAR(50),
     rule_case_no VARCHAR(50)
 )
+
+CREATE TABLE settings(
+    name VARCHAR(50),
+    email VARCHAR(100),
+    number VARCHAR(30)
+)
