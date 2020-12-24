@@ -16,7 +16,7 @@ routes.get('/list', (req, res)=>{
     connection.query(`SELECT * FROM rules`, (error, results, fields)=>{
         if(error) console.log(error)
 
-        res.send(results)
+        res.send(JSON.stringify(results))
     })
 })
 

@@ -9,6 +9,7 @@ import Icon from '../Icon/index'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 const DashboardChatBoot = (props) => {
+    let [selectOptions, setSelectOptions] = useState([])
     let [initialMessage, setInitialMessage] = useState('')
     let [inputTextOption, setInputTextOption] = useState('')
     let [filtredOptions, setFiltredOptions] = useState([])
@@ -18,6 +19,21 @@ const DashboardChatBoot = (props) => {
     const input = useRef(null);
     const sugestions = useRef(null);
     const ul = useRef(null);
+
+    useEffect(()=>{
+        const sla = async () => {
+            let response = await fetch('http://localhost:3030/list', {
+                method: 'GET',
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "json"
+                }
+            })
+            let result = await response.json()
+            setSelectOptions(result.map(option=>{return option.rule_title}))
+        }
+        sla()
+    }, [])
 
     useEffect(() => {
         const filtra = () => {
@@ -32,7 +48,7 @@ const DashboardChatBoot = (props) => {
         }
 
         filtra()
-    }, [inputTextOption])
+    }, [inputTextOption, selectOptions])
 
     const insere = (option) => {
         setOptions([...options, option])
@@ -64,6 +80,12 @@ const DashboardChatBoot = (props) => {
             <LiOptions key={option.value}>
                 <ButtonLiOptions onClick={() => { removeOption(option) }}>X</ButtonLiOptions>{option.value}
             </LiOptions>
+        ))
+    }
+
+    const renderSelectOptions = () => {
+        return selectOptions.map(( option, index ) => (
+            <option key={index} value={option}>option</option>
         ))
     }
 
@@ -109,9 +131,8 @@ const DashboardChatBoot = (props) => {
                                 value={inputTextOption}
                             />
 
-                            <SelectOptions name="" id="" ref={select}>
-                                <option value="Sim">Sim</option>
-                                <option value="Não">Não</option>
+                            <SelectOptions ref={select}>
+                                { renderSelectOptions() }
                             </SelectOptions>
 
                             <SpanOptions className="sugestions" ref={sugestions}>

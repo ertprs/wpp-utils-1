@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { MyContainer, FloatButton, Option } from './styles'
 
@@ -54,12 +54,43 @@ const FormNewRule = (props) => {
         }
     }
 
-    const save = () => {
+    const save = async () => {
         if(ruleType==="sim/nao"){
-            console.log(ruleTitle, ruleText, ruleCaseYes, ruleCaseNo)
+            let result = await fetch("http://localhost:3030/saveNewRule", {
+                method: 'POST',
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "json"
+                },
+                body: JSON.stringify({
+                    title: ruleTitle,
+                    type: ruleType,
+                    text: ruleText,
+                    caseYes: ruleCaseYes,
+                    caseNo: ruleCaseNo
+                })
+            })
+
         }else if(ruleType==="finalizar"){
-            console.log(ruleTitle, ruleText)
+            
+            let result = await fetch("http://localhost:3030/saveNewRule", {
+                method: 'POST',
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "json"
+                },
+                body: JSON.stringify({
+                    title: ruleTitle,
+                    type: ruleType,
+                    text: ruleText,
+                    caseYes: null,
+                    caseNo: null
+                })
+            })
+
         }
+
+        props.toggleDisplay()
     }
 
     return (
