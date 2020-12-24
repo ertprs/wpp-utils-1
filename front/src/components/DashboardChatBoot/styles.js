@@ -1,5 +1,11 @@
 import styled from 'styled-components'
 
+import { Button, Container } from 'react-bootstrap'
+
+const MyContainer = styled(Container)`
+    height: 100%;
+`
+
 const DivOptions = styled.div`
     display:flex;
     flex-direction: column;
@@ -89,4 +95,17 @@ const SpanSugestionOptions = styled.span`
     }
 `
 
-export { DivOptions, UlOptions, LiOptions, ButtonLiOptions, InputOptions, SelectOptions, SpanOptions, SpanSugestionOptions }
+const FloatButton = styled(Button)`
+    position: fixed;
+    bottom: 3%;
+    right: 2%;
+    border-radius: 50%;
+    font-size: 35px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+`
+
+export { DivOptions, UlOptions, LiOptions, ButtonLiOptions, InputOptions, SelectOptions, SpanOptions, SpanSugestionOptions , FloatButton, MyContainer}

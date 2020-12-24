@@ -48,5 +48,13 @@ const MyTextarea = styled.textarea`
     }
 `
 
+const MySelect = styled.select`
+    border-radius: 4px;
+    background-color: transparent;
+    padding: 4px 6px;
+    border: solid 1.5px #141414;
+    color: #b5b5b5;
+`
 
-export {MyDivInput, MyInput, MyTextarea}
+
+export {MyDivInput, MyInput, MyTextarea, MySelect}

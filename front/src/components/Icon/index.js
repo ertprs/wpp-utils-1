@@ -3,7 +3,6 @@ import styled from 'styled-components'
 
 const IconCss = styled.span`
     font-size: ${props => props.size};
-    padding-right: 10px
 `
 
 const Icon = (props) => {

@@ -158,6 +158,18 @@
             removelista()
         })
 
+
+
+        ////////////////////////////////////
+        let array = [{name: "Pedro", sla: "Lima", fds: "fds"}]
+        let newObject = {}
+
+        Object.keys(array[0]).forEach(prop => {
+            newObject[prop] = array[0][prop]
+        })
+
+        console.log(newObject)
+
     </script>
 </body>
 </html>

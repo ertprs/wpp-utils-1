@@ -23,25 +23,25 @@ const AsideComponent = () => {
 
                 <DashBoardItem>
                     <ContentItem to="/" selected={ (location.pathname === "/") ? true : false }>
-                        <Icon icon={faHome} size="17px" /> Home
+                        <Icon icon={faHome} size="17px" />&nbsp;&nbsp;Home
                     </ContentItem>
                 </DashBoardItem>
 
                 <DashBoardItem>
                     <ContentItem to="/to-do" selected={ (location.pathname === "/to-do") ? true : false }>
-                        <Icon icon={faTasks} size="17px" />To-do
+                        <Icon icon={faTasks} size="17px" />&nbsp;&nbsp;To-do
                     </ContentItem>
                 </DashBoardItem>
 
                 <DashBoardItem>
                     <ContentItem to="chatBoot" selected={ (location.pathname === "/chatBoot") ? true : false }>
-                        <Icon icon={faRobot} size="17px" />Chat Boot
+                        <Icon icon={faRobot} size="17px" />&nbsp;&nbsp;Chat Boot
                     </ContentItem>
                 </DashBoardItem>
 
                 <DashBoardItem>
                     <ContentItem to="settings" selected={ (location.pathname === "/settings") ? true : false }>
-                        <Icon icon={faWrench} size="17px" />Settings
+                        <Icon icon={faWrench} size="17px" />&nbsp;&nbsp;Settings
                     </ContentItem>
                 </DashBoardItem>
             </DashBoardMenu>

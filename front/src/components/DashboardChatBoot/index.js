@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Col, Row, Container } from 'react-bootstrap'
+import { Col, Row } from 'react-bootstrap'
 import Input from '../Input'
 import Button from '../Button'
 
-import { DivOptions, UlOptions, LiOptions, ButtonLiOptions, InputOptions, SelectOptions, SpanOptions, SpanSugestionOptions } from './styles'
+import { DivOptions, UlOptions, LiOptions, ButtonLiOptions, InputOptions, SelectOptions, SpanOptions, SpanSugestionOptions, FloatButton, MyContainer } from './styles'
 import Label from '../Label/index'
+import Icon from '../Icon/index'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-const FormChatBoot = () => {
+const DashboardChatBoot = (props) => {
     let [initialMessage, setInitialMessage] = useState('')
     let [inputTextOption, setInputTextOption] = useState('')
     let [filtredOptions, setFiltredOptions] = useState([])
@@ -54,8 +56,7 @@ const FormChatBoot = () => {
     const renderSugestionsOptions = () => {
         return filtredOptions.map(option => (
             <SpanSugestionOptions onClick={() => insere(option)} key={option.value}>{option.value}</SpanSugestionOptions>
-        )
-        )
+        ))
     }
 
     const renderOptions = () => {
@@ -66,38 +67,51 @@ const FormChatBoot = () => {
         ))
     }
 
+    const save = async () => {
+        let sendOptions = options.map(option => option.value)
+
+        let result = await fetch('http://localhost:3030/sendMessage', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'accept': 'json'
+            },
+            body: JSON.stringify({
+                initialMessage,
+                options: sendOptions,
+            })
+        })
+        
+    }
+
     return (
         <>
-            <Container className="mt-3">
+            <MyContainer className="mt-3 mb-3">
                 <Row>
-                    <Col md={12}>
-                        <Input value={initialMessage} onChange={(e) => setInitialMessage(e)} label="Initial message" placeholder="Inform the initial message" height="250px" textarea required />
+                    <Col>
+                        <Input value={initialMessage} onChange={(e) => setInitialMessage(e)} label="Initial message" placeholder="Inform the initial message" height="250px" type="textarea" required />
                     </Col>
                 </Row>
-                <Row>
-                    <Col md={12} className="mt-2">
-                        <Label label="Escolha as regra em ordem (Não repita nenhuma regra)" required />
+                <Row className="mt-2">
+                    <Col>
+                        <Label label="Choice the order of rules (don't repeat any rules)" required />
                         <DivOptions>
 
                             <UlOptions ref={ul}>
-                                <LiOptions key="initialMessage">
-                                    <ButtonLiOptions>X</ButtonLiOptions>InitialMessage
-                                </LiOptions>
                                 {renderOptions()}
                             </UlOptions>
 
                             <InputOptions
                                 type="text"
-                                placeholder="Digite as opções de menu"
+                                placeholder="Select the options of rules"
                                 onChange={(e) => setInputTextOption(e.target.value)}
                                 ref={input}
                                 value={inputTextOption}
                             />
 
                             <SelectOptions name="" id="" ref={select}>
-                                <option value="Pedro">Pedro</option>
-                                <option value="Lara">Lara</option>
-                                <option value="Alessandra">Alessandra</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
                             </SelectOptions>
 
                             <SpanOptions className="sugestions" ref={sugestions}>
@@ -108,11 +122,15 @@ const FormChatBoot = () => {
                     </Col>
                 </Row>
                 <Row className="d-flex flex-row justify-content-center mt-3">
-                    <Button name="Save" variant="outline-danger" width="15%" />
+                    <Button name="Save" variant="outline-danger" width="15%" onClick={()=>save()} />
                 </Row>
-            </Container>
+            </MyContainer>
+
+            <FloatButton variant="outline-danger" onClick={()=>props.toggleDisplay()}>
+                <Icon size="25px" icon={faPlus}/>
+            </FloatButton>
         </>
     )
 }
 
-export default FormChatBoot
+export default DashboardChatBoot
