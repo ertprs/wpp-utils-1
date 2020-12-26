@@ -1,4 +1,4 @@
-let mysql = require('mysql');
+let mysql = require('mysql-await');
 
 let connection = mysql.createConnection({
   host     : 'localhost',

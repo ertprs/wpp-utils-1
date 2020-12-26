@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mysql": "^2.18.1",
+    "mysql-await": "^2.1.6",
     "nodemon": "^2.0.6",
     "venom-bot": "^2.2.2"
   }

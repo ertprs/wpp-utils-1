@@ -1,2 +1,4 @@
 node_modules
 tokens
+session.data.json
+debug.log
