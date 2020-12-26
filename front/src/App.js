@@ -15,11 +15,13 @@ const App = () => {
     <Page>
       <BrowserRouter>
         <GlobalStyle />
+        
         <Aside />
         <MainContainer>
           <Header />
           <Routes />
         </MainContainer>
+
       </BrowserRouter>
     </Page>
   );

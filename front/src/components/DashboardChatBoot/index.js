@@ -3,52 +3,65 @@ import { Col, Row } from 'react-bootstrap'
 import Input from '../Input'
 import Button from '../Button'
 
-import { DivOptions, UlOptions, LiOptions, ButtonLiOptions, InputOptions, SelectOptions, SpanOptions, SpanSugestionOptions, FloatButton, MyContainer } from './styles'
+import { DivOptions, UlOptions, LiOptions, ButtonLiOptions, InputOptions, SpanOptions, SpanSugestionOptions, FloatButton, MyContainer } from './styles'
 import Label from '../Label/index'
 import Icon from '../Icon/index'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 const DashboardChatBoot = (props) => {
-    let [selectOptions, setSelectOptions] = useState([])
     let [initialMessage, setInitialMessage] = useState('')
     let [inputTextOption, setInputTextOption] = useState('')
-    let [filtredOptions, setFiltredOptions] = useState([])
     let [options, setOptions] = useState([])
+    let [filtredOptions, setFiltredOptions] = useState([])
+    let [allOptions, setAllOptions] = useState([])
 
-    const select = useRef();
     const input = useRef(null);
-    const sugestions = useRef(null);
-    const ul = useRef(null);
 
     useEffect(()=>{
-        const sla = async () => {
-            let response = await fetch('http://localhost:3030/list', {
+        const getData = async () => {
+
+            let response = await fetch('http://localhost:3030/rules', {
                 method: 'GET',
                 headers: {
                     "content-type": "application/json",
                     "accept": "json"
                 }
             })
-            let result = await response.json()
-            setSelectOptions(result.map(option=>{return option.rule_title}))
+            let data = await response.json()
+            setAllOptions(data.map(option=>{return option.rule_title}))
+
+            response = await fetch('http://localhost:3030/initial', {
+                method: 'GET',
+                headers: {
+                    "content-type": "application/json",
+                    "accept": "json"
+                }
+            })
+            data = await response.json()
+            setInitialMessage(data.initial_message)
+            if(data.sequence!==""){
+                setOptions(data.sequence.split(", "))
+            }
+            
         }
-        sla()
+
+        getData()
     }, [])
 
     useEffect(() => {
         const filtra = () => {
-            let filtreds = [...select.current.children].filter(option => {
-                if (option.value.indexOf(inputTextOption) > -1) {
+            let filtreds = allOptions.filter((option) => {
+                if (option.indexOf(inputTextOption) > -1) {
                     return option
                 }
                 return null
             })
-
+            
             setFiltredOptions(filtreds)
         }
 
         filtra()
-    }, [inputTextOption, selectOptions])
+    }, [inputTextOption, allOptions])
 
     const insere = (option) => {
         setOptions([...options, option])
@@ -70,40 +83,33 @@ const DashboardChatBoot = (props) => {
     }
 
     const renderSugestionsOptions = () => {
-        return filtredOptions.map(option => (
-            <SpanSugestionOptions onClick={() => insere(option)} key={option.value}>{option.value}</SpanSugestionOptions>
-        ))
+        return filtredOptions.map(option => {
+            return(
+                <SpanSugestionOptions onClick={() => insere(option)} key={option}>{option}</SpanSugestionOptions>
+            )
+        })
     }
 
     const renderOptions = () => {
         return options.map(option => (
-            <LiOptions key={option.value}>
-                <ButtonLiOptions onClick={() => { removeOption(option) }}>X</ButtonLiOptions>{option.value}
+            <LiOptions key={option}>
+                <ButtonLiOptions onClick={() => { removeOption(option) }}>X</ButtonLiOptions>{option}
             </LiOptions>
         ))
     }
 
-    const renderSelectOptions = () => {
-        return selectOptions.map(( option, index ) => (
-            <option key={index} value={option}>option</option>
-        ))
-    }
-
     const save = async () => {
-        let sendOptions = options.map(option => option.value)
-
-        let result = await fetch('http://localhost:3030/sendMessage', {
+        let response = await fetch('http://localhost:3030/initial', {
             method: 'POST',
             headers: {
-                'content-type': 'application/json',
-                'accept': 'json'
+                "content-type": "application/json",
+                "accept": "json"
             },
             body: JSON.stringify({
-                initialMessage,
-                options: sendOptions,
+                initial_message: initialMessage,
+                sequence: options
             })
         })
-        
     }
 
     return (
@@ -119,7 +125,7 @@ const DashboardChatBoot = (props) => {
                         <Label label="Choice the order of rules (don't repeat any rules)" required />
                         <DivOptions>
 
-                            <UlOptions ref={ul}>
+                            <UlOptions>
                                 {renderOptions()}
                             </UlOptions>
 
@@ -131,11 +137,7 @@ const DashboardChatBoot = (props) => {
                                 value={inputTextOption}
                             />
 
-                            <SelectOptions ref={select}>
-                                { renderSelectOptions() }
-                            </SelectOptions>
-
-                            <SpanOptions className="sugestions" ref={sugestions}>
+                            <SpanOptions className="sugestions">
                                 {renderSugestionsOptions()}
                             </SpanOptions>
 

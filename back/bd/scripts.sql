@@ -12,3 +12,13 @@ CREATE TABLE settings(
     email VARCHAR(100),
     number VARCHAR(30)
 )
+
+CREATE TABLE botOperation(
+    initial_message VARCHAR(500),
+    sequence VARCHAR(500)
+)
+
+CREATE TABLE users(
+    user VARCHAR(50),
+    rule VARCHAR(50)
+)

@@ -1,0 +1,32 @@
+const venom = require('venom-bot')
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const routes = require('./routes/app')
+
+const app = express()
+
+app.use(cors())
+app.use(bodyParser.json())    //pesquisar isso
+app.use(bodyParser.urlencoded({extended: false})) //pesquisar isso
+
+venom
+.create({
+    autoClose: 9999999999,
+})
+.then((client) => start(client))
+.catch((erro) => {
+    console.log(erro);
+});
+
+const start = (client) => {
+        client.onMessage(message => {
+            console.log(message)
+        })
+}
+
+app.use('/', routes)
+
+app.listen('3030', ()=>{
+    console.log('rodando em 3030')
+})

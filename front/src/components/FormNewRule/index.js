@@ -56,7 +56,7 @@ const FormNewRule = (props) => {
 
     const save = async () => {
         if(ruleType==="sim/nao"){
-            let result = await fetch("http://localhost:3030/saveNewRule", {
+            let result = await fetch("http://localhost:3030/rules", {
                 method: 'POST',
                 headers: {
                     "content-type": "application/json",
@@ -73,7 +73,7 @@ const FormNewRule = (props) => {
 
         }else if(ruleType==="finalizar"){
             
-            let result = await fetch("http://localhost:3030/saveNewRule", {
+            let result = await fetch("http://localhost:3030/rules", {
                 method: 'POST',
                 headers: {
                     "content-type": "application/json",
