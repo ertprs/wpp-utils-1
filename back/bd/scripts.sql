@@ -20,5 +20,5 @@ CREATE TABLE botOperation(
 
 CREATE TABLE users(
     user VARCHAR(50),
-    step INTEGER
+    step VARCHAR(20)
 )

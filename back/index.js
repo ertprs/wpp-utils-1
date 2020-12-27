@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const routes = require('./routes/app')
 const connection = require('./bd/index')
+const { awaitQuery } = require('./bd/index')
 
 const app = express()
 
@@ -13,58 +14,144 @@ app.use(bodyParser.urlencoded({extended: false})) //pesquisar isso
 
 wa.create().then(client => start(client));
 
-const initial = async (client, message, sequence, operation) => {
-  let menu = ''
+const getMenu = (sequence) => {
+  let menu = '\n\n'
 
   sequence.map((option, index) => {
     menu += `*${index}* - ${option}\n`
   })
 
-  client.sendText(message.from, `${operation[0].initial_message} \n\n${menu}`)
-  await connection.awaitQuery(`UPDATE users SET step=step+1 WHERE user='${message.from}'`)
+  return menu
 }
 
-const sendOtherMsg = async (client, message, sequence, operation, user) => {
-  let currentRuleTitle = sequence[user[0].step-1]
+const getData = async () => {
+  let operation = await connection.awaitQuery(`SELECT * FROM botoperation`)
+  let sequence = operation[0].sequence.split(', ')
+  operation = operation[0]
 
-  let rule = await connection.awaitQuery(`SELECT * FROM rules WHERE rule_title='${currentRuleTitle}'`)
+  return {operation, sequence}
+}
 
-  client.sendText(message.from, `Título: *${rule[0].rule_title}*\n\n${rule[0].rule_text}`)
-  await connection.awaitQuery(`UPDATE users SET step=step+1 WHERE user='${message.from}'`)
+const formatMessage = (rule, menu = false) => {
+  if(menu){
+    return rule.rule_text + getMenu(rule.rule_menu)
+  }
+  return `Você escolheu: *${rule.rule_title}*\n\n${rule.rule_text}`
+}
+
+const getRule = async (title) => {
+  let rule = await connection.awaitQuery(`SELECT * FROM rules WHERE rule_title='${title}'`)
+  rule = rule[0]
+  return rule
+}
+
+const checkAnswer = (message, sequence) => {
+  if(sequence[message.body]){
+
+    return true
+
+  }else{
+
+    return false
+
+  }
+}
+
+const nextStep = async (client, message, rule) => {
+
+  if(rule.rule_type === 'finalizar'){
+
+    await connection.awaitQuery(`UPDATE users SET step='initial' WHERE user='${message.from}'`)
+
+  }else if(rule.rule_type === 'mostra_menu'){
+
+    await connection.awaitQuery(`UPDATE users SET step='menu-${rule.rule_title}' WHERE user='${message.from}'`)
+
+  }else if(rule.rule_type === 'sim/nao'){
+
+    //ainda n sei
+
+  }
+
+}
+
+const sendMessage = async (client, message, user, data) => {
+
+  if(user.step === 'initial'){
+
+    client.sendText(message.from, formatMessage({rule_text: data.operation.initial_message, rule_menu: data.sequence}, true))
+    await connection.awaitQuery(`UPDATE users SET step='menu' WHERE user='${message.from}'`)
+
+  }else if(user.step === 'menu'){
+
+    if(checkAnswer(message, data.sequence)){
+
+      let rule = await getRule(data.sequence[message.body])
+  
+      if(rule.rule_type === 'mostrar_menu'){
+        let sequence = rule.sequence.split(', ')
+        client.sendText(message.from, formatMessage({...rule, rule_sequence: sequence}, true))
+        //client.sendText(message.from, formatMessage({rule, rule_sequence: sequence}, true))
+      }else{
+        client.sendText(message.from, formatMessage(rule))        
+      }
+
+      nextStep(client, message, rule)
+
+    }else{
+
+      client.sendText(message.from, "Número inválido, redigite.")
+
+    }
+
+  }else if(user.step.indexOf('menu-') > -1){
+
+    let ruleTitle = user.step.split("-")[1]
+    let rule = await getRule(ruleTitle)
+
+    let sequence = rule.sequence.split(', ')
+    
+    if(checkAnswer(message, sequence)){
+
+      client.sendText(message.from, formatMessage(rule))
+
+      nextStep(client, message, rule)
+
+    }else{
+
+      client.sendText(message.from, "Número inválido, redigite.")
+
+    }
+
+  }
 }
 
 const start = (client) => {
   client.onAnyMessage( async (message) => {
-    if (message.body === 'Hi') {
+    if (message.body === 'Hi' || message.body === 'hi') {
       try{
         let user = await connection.awaitQuery(`SELECT * FROM users WHERE user='${message.from}'`)
         if(user.length === 0){
-          await connection.awaitQuery(`INSERT INTO users (user, step) VALUES('${message.from}', 0)`)
+          await connection.awaitQuery(`INSERT INTO users (user, step) VALUES('${message.from}', 'initial')`)
           user = await connection.awaitQuery(`SELECT * FROM users WHERE user='${message.from}'`)
         }
-
-        let operation = await connection.awaitQuery(`SELECT * FROM botoperation`)
-        let sequence = operation[0].sequence.split(', ')
-
-        if(user[0].step === 0) initial(client, message, sequence, operation)
-        else sendOtherMsg(client, message, sequence, operation, user)
-
-        //let rule = await connection.awaitQuery(`SELECT * FROM rules WHERE rule_title='${sequence[user[0].step]}'`)
-        
-        //client.sendText(message.from, rule[0].rule_text)
-        //await connection.awaitQuery(`UPDATE users SET step=step+1 WHERE user='${message.from}'`)
-
+        let data = await getData()
+        if(user[0].step === 'initial') sendMessage(client, message, user[0], data)
       }catch(e){
         console.log("erro: ",e)
       }
     }else{
-      //verificar se já ta cadastrado no banco, se tiver, continuar
-      //verificar o regra atual e se a resposta dele coincide com as que deve digitar, se n coindicir, avisar erro.
-      //Caso contrário, chamar o sendOtherMsg
-      //mudar de step para nome da regra atual e assim identificar as repostas
+      if(!isNaN(message.body)){
+        let user = await connection.awaitQuery(`SELECT * FROM users WHERE user='${message.from}' AND step!='initial'`)
+        if(user.length > 0){
+          let data = await getData()
+          sendMessage(client, message, user[0], data)
+        }
+      }
     }
   });
 }
+
 app.use('/', routes)
 
 app.listen('3030', ()=>{
