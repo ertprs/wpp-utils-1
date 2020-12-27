@@ -90,7 +90,6 @@ const sendMessage = async (client, message, user, data) => {
   
       if(rule.rule_type === 'mostra_menu'){
         let sequence = rule.rule_sequence.split(', ')
-        console.log(sequence)
         client.sendText(message.from, formatMessage({...rule, rule_menu: sequence}, true))
         //client.sendText(message.from, formatMessage({rule, rule_sequence: sequence}, true))
       }else{
@@ -114,7 +113,12 @@ const sendMessage = async (client, message, user, data) => {
     
     if(checkAnswer(message, sequence)){
 
-      client.sendText(message.from, formatMessage(rule))
+      if(rule.rule_type === 'mostra_menu'){
+        let sequence = rule.rule_sequence.split(', ')
+        client.sendText(message.from, formatMessage({...rule, rule_menu: sequence}, true))
+      }else{
+        client.sendText(message.from, formatMessage(rule))        
+      }
 
       nextStep(client, message, rule)
 
