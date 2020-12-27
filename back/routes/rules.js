@@ -12,8 +12,10 @@ routes.get('/', (req, res)=>{
 })
 
 routes.post('/', (req, res)=>{
-    let { title, type, text, caseYes, caseNo } = req.body
-    connection.query(`INSERT INTO rules (rule_title, rule_type, rule_text, rule_case_yes, rule_case_no) VALUES('${title}', '${type}', '${text}', '${caseYes}', '${caseNo}')`, (error, results, fields)=>{
+    let { title, type, text, sequence, caseYes, caseNo } = req.body
+    sequence = sequence.join(", ")
+
+    connection.query(`INSERT INTO rules (rule_title, rule_type, rule_text, rule_sequence, rule_case_yes, rule_case_no) VALUES('${title}', '${type}', '${text}', '${sequence}', '${caseYes}', '${caseNo}')`, (error, results, fields)=>{
         if(error) console.log(error)
 
         res.send('inseridoo')

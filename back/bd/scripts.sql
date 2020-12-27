@@ -3,6 +3,7 @@ CREATE TABLE rules(
 	rule_title VARCHAR(30) NOT NULL,
     rule_type VARCHAR(30) NOT NULL,
     rule_text VARCHAR(500) NOT NULL,
+    rule_sequence VARCHAR(500),
     rule_case_yes VARCHAR(50),
     rule_case_no VARCHAR(50)
 )
